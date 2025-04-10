@@ -2,12 +2,33 @@ import { useState } from 'react';
 import './App.css'; // Ensure global font like 'Inter' or 'Sans' is set here
 
 function App() {
-  const [drug, setDrug] = useState('N-[1-(3-methoxyphenyl)ethyl]-4-methyl-2-pyridin-4-yl-1,3-thiazole-5-carboxamide');
-  const [target, setTarget] = useState('Receptor-type tyrosine-protein kinase FLT3 (EC 2.7.10.1) (FL cytokine receptor) (Fetal liver kinase-2) (FLK-2) (Fms-like tyrosine kinase 3) (FLT-3) (Stem cell tyrosine kinase 1) (STK-1) (CD antigen CD135)');
+  const [drug, setDrug] = useState('');
+  const [target, setTarget] = useState('');
   const [predictedAffinity, setPredictedAffinity] = useState(null);
   const [expectedAffinity, setExpectedAffinity] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const getBindingClassification = (kibaScore) => {
+    // Ensure we have a numerical value
+    const score = Number(kibaScore);
+    if (score > 12) {
+      return {
+        label: 'Strong Binding',
+        className: 'bg-green-100 text-green-800 border border-green-200'
+      };
+    } else if (score >= 9 && score <= 12) {
+      return {
+        label: 'Moderate Binding',
+        className: 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+      };
+    } else {
+      return {
+        label: 'Weak Binding',
+        className: 'bg-red-100 text-red-800 border border-red-200'
+      };
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -132,6 +153,12 @@ function App() {
                 <span className="font-semibold">Expected Affinity:</span> {expectedAffinity}
               </p>
             )}
+            <p className="mt-1">
+              <span className="font-semibold">Binding Classification:</span>
+              <span className={`ml-2 px-2 py-1 rounded ${getBindingClassification(predictedAffinity).className}`}>
+                {getBindingClassification(predictedAffinity).label}
+              </span>
+            </p>
           </div>
         )}
       </div>
